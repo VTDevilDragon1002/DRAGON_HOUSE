@@ -1,62 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Secure Login</title>
+
+<meta charset="UTF-8">
+<title>WildLife Secure Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
 
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
 body{
-font-family:Arial;
-background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
+background:url("https://images.unsplash.com/photo-1501706362039-c6e13b3e5c5c") no-repeat center/cover;
 color:white;
 }
 
 .container{
-width:350px;
-background:rgba(255,255,255,0.08);
-padding:30px;
-border-radius:10px;
+width:420px;
+background:rgba(0,0,0,0.7);
+padding:40px;
+border-radius:12px;
 backdrop-filter:blur(10px);
-box-shadow:0 0 20px rgba(0,0,0,0.5);
+box-shadow:0 0 25px rgba(0,0,0,0.7);
 text-align:center;
 }
 
+.logo{
+font-size:28px;
+margin-bottom:20px;
+}
+
 input{
-width:90%;
-padding:10px;
-margin:10px;
+width:100%;
+padding:12px;
+margin:10px 0;
 border:none;
-border-radius:5px;
+border-radius:6px;
+outline:none;
 }
 
 button{
-padding:10px 20px;
-background:#00e5ff;
+width:100%;
+padding:12px;
+margin-top:10px;
 border:none;
-border-radius:5px;
-cursor:pointer;
+border-radius:6px;
+background:#4CAF50;
+color:white;
 font-weight:bold;
+cursor:pointer;
 }
 
 button:hover{
-background:#00bcd4;
+background:#2e7d32;
+}
+
+.switch{
+margin-top:15px;
+font-size:14px;
+cursor:pointer;
+color:#8BC34A;
 }
 
 .hidden{
 display:none;
-}
-
-.fade{
-animation:fade 0.5s;
-}
-
-@keyframes fade{
-from{opacity:0;transform:translateY(20px);}
-to{opacity:1;transform:translateY(0);}
 }
 
 </style>
@@ -67,44 +84,31 @@ to{opacity:1;transform:translateY(0);}
 
 <div class="container">
 
-<!-- SIGNUP PAGE -->
+<div class="logo">🐾 WildLife Portal</div>
 
-<div id="signup" class="fade">
+<div id="signup">
 
-<h2>Sign Up</h2>
+<h2>Create Account</h2>
 
-<input type="text" id="newuser" placeholder="Create Username">
+<input type="text" id="newuser" placeholder="Username">
+<input type="password" id="newpass" placeholder="Password">
 
-<input type="password" id="newpass" placeholder="Create Password">
+<button onclick="goLogin()">Sign Up</button>
 
-<br>
-
-<button onclick="goLogin()">Create Account</button>
-
-<br><br>
-
-<button onclick="showLogin()">Login</button>
+<div class="switch" onclick="goLogin()">Already have account? Login</div>
 
 </div>
 
-
-<!-- LOGIN PAGE -->
-
-<div id="login" class="hidden fade">
+<div id="login" class="hidden">
 
 <h2>Login</h2>
 
 <input type="text" id="username" placeholder="Username">
-
 <input type="password" id="password" placeholder="Password">
-
-<br>
 
 <button onclick="login()">Login</button>
 
-<br><br>
-
-<button onclick="showSignup()">Sign Up</button>
+<div class="switch" onclick="goSignup()">Create account</div>
 
 </div>
 
@@ -112,95 +116,97 @@ to{opacity:1;transform:translateY(0);}
 
 <script>
 
-/* TOKEN DETECTION */
+function checkToken(){
 
-let url = window.location.href;
+const params = new URLSearchParams(window.location.search);
 
-if(url.includes("token=")){
+if(!params.has("token")) return;
 
-let token = url.split("token=")[1];
+let token = params.get("token");
 
 try{
 
-let decoded = atob(token);
+let firstDecode = atob(token);
+let secondDecode = atob(firstDecode);
 
-if(decoded.includes("+admin")){
+let parts = secondDecode.split("+");
 
-window.location.replace("/flag.html");
+let username = parts[1];
+
+setTimeout(function(){
+
+if(username === "admin"){
+
+window.location.replace("flag.html?token=" + token);
+
+}else{
+
+window.location.replace("dashboard.html");
 
 }
 
-}catch(e){}
+},3000);
+
+}catch(e){
+
+console.log("Invalid token");
 
 }
 
+}
 
-/* SWITCH TO LOGIN */
-
-function showLogin(){
+function goLogin(){
 
 document.getElementById("signup").classList.add("hidden");
 document.getElementById("login").classList.remove("hidden");
 
 }
 
-
-/* SWITCH TO SIGNUP */
-
-function showSignup(){
+function goSignup(){
 
 document.getElementById("login").classList.add("hidden");
 document.getElementById("signup").classList.remove("hidden");
 
 }
 
-
-/* CREATE ACCOUNT → GO LOGIN */
-
-function goLogin(){
-
-alert("Account created! Please login.");
-
-showLogin();
-
-}
-
-
-/* LOGIN PROCESS */
-
 function login(){
 
-let username=document.getElementById("username").value;
-let password=document.getElementById("password").value;
+let username = document.getElementById("username").value;
+let password = document.getElementById("password").value;
 
-if(username=="" || password==""){
+if(username === "" || password === ""){
 
 alert("Enter username and password");
 return;
 
 }
 
-/* random ID */
+if(username === "admin"){
 
-let id=Math.floor(1000 + Math.random()*9000);
+alert("Admin login is disabled");
+return;
 
-let tokenData=id+"+"+username;
+}
 
-let token=btoa(tokenData);
+let id = Math.floor(1000 + Math.random()*9000);
 
-/* show token in URL */
+let tokenData = id + "+" + username;
 
-history.pushState({}, "", "/index.html/token="+token);
+let first = btoa(tokenData);
 
-/* redirect after 3 seconds */
+let second = btoa(first);
+
+history.pushState({}, "", "index.html?token=" + second);
 
 setTimeout(function(){
 
-window.location.replace("/dashboard.html");
+window.location.replace("dashboard.html");
 
 },3000);
 
 }
+
+checkToken();
 
 </script>
 
