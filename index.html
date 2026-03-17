@@ -75,11 +75,15 @@ to{opacity:1;transform:translateY(0);}
 
 <input type="text" id="newuser" placeholder="Create Username">
 
-<input type="password" placeholder="Create Password">
+<input type="password" id="newpass" placeholder="Create Password">
 
 <br>
 
 <button onclick="goLogin()">Create Account</button>
+
+<br><br>
+
+<button onclick="showLogin()">Login</button>
 
 </div>
 
@@ -97,6 +101,10 @@ to{opacity:1;transform:translateY(0);}
 <br>
 
 <button onclick="login()">Login</button>
+
+<br><br>
+
+<button onclick="showSignup()">Sign Up</button>
 
 </div>
 
@@ -127,13 +135,33 @@ window.location.replace("/flag.html");
 }
 
 
-/* SIGNUP → LOGIN */
+/* SWITCH TO LOGIN */
+
+function showLogin(){
+
+document.getElementById("signup").classList.add("hidden");
+document.getElementById("login").classList.remove("hidden");
+
+}
+
+
+/* SWITCH TO SIGNUP */
+
+function showSignup(){
+
+document.getElementById("login").classList.add("hidden");
+document.getElementById("signup").classList.remove("hidden");
+
+}
+
+
+/* CREATE ACCOUNT → GO LOGIN */
 
 function goLogin(){
 
-document.getElementById("signup").classList.add("hidden");
+alert("Account created! Please login.");
 
-document.getElementById("login").classList.remove("hidden");
+showLogin();
 
 }
 
@@ -143,13 +171,11 @@ document.getElementById("login").classList.remove("hidden");
 function login(){
 
 let username=document.getElementById("username").value;
-
 let password=document.getElementById("password").value;
 
 if(username=="" || password==""){
 
 alert("Enter username and password");
-
 return;
 
 }
@@ -166,13 +192,13 @@ let token=btoa(tokenData);
 
 history.pushState({}, "", "/index.html/token="+token);
 
-/* redirect after 1 second */
+/* redirect after 3 seconds */
 
 setTimeout(function(){
 
 window.location.replace("/dashboard.html");
 
-},1000);
+},3000);
 
 }
 
