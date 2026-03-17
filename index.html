@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Secure Login</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+}
+
+.container{
+width:350px;
+background:rgba(255,255,255,0.08);
+padding:30px;
+border-radius:10px;
+backdrop-filter:blur(10px);
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+text-align:center;
+}
+
+input{
+width:90%;
+padding:10px;
+margin:10px;
+border:none;
+border-radius:5px;
+}
+
+button{
+padding:10px 20px;
+background:#00e5ff;
+border:none;
+border-radius:5px;
+cursor:pointer;
+font-weight:bold;
+}
+
+button:hover{
+background:#00bcd4;
+}
+
+.hidden{
+display:none;
+}
+
+.fade{
+animation:fade 0.5s;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- SIGNUP PAGE -->
+
+<div id="signup" class="fade">
+
+<h2>Sign Up</h2>
+
+<input type="text" id="newuser" placeholder="Create Username">
+
+<input type="password" placeholder="Create Password">
+
+<br>
+
+<button onclick="goLogin()">Create Account</button>
+
+</div>
+
+
+<!-- LOGIN PAGE -->
+
+<div id="login" class="hidden fade">
+
+<h2>Login</h2>
+
+<input type="text" id="username" placeholder="Username">
+
+<input type="password" id="password" placeholder="Password">
+
+<br>
+
+<button onclick="login()">Login</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* TOKEN DETECTION */
+
+let url = window.location.href;
+
+if(url.includes("token=")){
+
+let token = url.split("token=")[1];
+
+try{
+
+let decoded = atob(token);
+
+if(decoded.includes("+admin")){
+
+window.location.replace("/flag.html");
+
+}
+
+}catch(e){}
+
+}
+
+
+/* SIGNUP → LOGIN */
+
+function goLogin(){
+
+document.getElementById("signup").classList.add("hidden");
+
+document.getElementById("login").classList.remove("hidden");
+
+}
+
+
+/* LOGIN PROCESS */
+
+function login(){
+
+let username=document.getElementById("username").value;
+
+let password=document.getElementById("password").value;
+
+if(username=="" || password==""){
+
+alert("Enter username and password");
+
+return;
+
+}
+
+/* random ID */
+
+let id=Math.floor(1000 + Math.random()*9000);
+
+let tokenData=id+"+"+username;
+
+let token=btoa(tokenData);
+
+/* show token in URL */
+
+history.pushState({}, "", "/index.html/token="+token);
+
+/* redirect after 1 second */
+
+setTimeout(function(){
+
+window.location.replace("/dashboard.html");
+
+},1000);
+
+}
+
+</script>
+
+</body>
+</html>
